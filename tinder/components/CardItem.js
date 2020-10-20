@@ -1,20 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from '../assets/styles';
 
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
 import { Text, View, Image, Dimensions, TouchableOpacity } from 'react-native';
-import Icon from './Icon';
 
 const CardItem = ({
-  actions,
-  description,
+  data,
   image,
-  matches,
   name,
-  onPressLeft,
-  onPressRight,
-  status,
   variant
 }) => {
+  let fullname = "" + name.title + " " + name.last + " " + name.first;
+  let location = "" + data.user.location.street + "\n" + data.user.location.city + "\n" + data.user.location.state;
+  let phone = data.user.phone;
+
+  const [dataa, setData] = useState();
+  const [click, setClick] = useState(0);
+  const [des, setDes] = useState("Full Name");
+  const [inf, setInf] = useState(fullname);
+  useEffect(() => {
+    setData(data)
+    console.log('[CardItem]:\n' + dataa)
+
+  }, [])
+
+  const authHandler = async (t) => {
+    setClick(t)
+    if (t === 0) {
+      setDes("Full Name");
+      setInf(fullname);
+    } else
+      if (t === 3) {
+        setDes("Phone");
+        setInf(phone);
+      }
+      else
+        if (t === 2) {
+          setDes("Location");
+          setInf(location);
+        }
+  };
+
+
   // Custom styling
   const fullWidth = Dimensions.get('window').width;
   const imageStyle = [
@@ -31,71 +61,64 @@ const CardItem = ({
       paddingTop: variant ? 10 : 15,
       paddingBottom: variant ? 5 : 7,
       color: '#363636',
-      fontSize: variant ? 15 : 30
+      fontSize: 20,
+      alignItems: 'center'
     }
   ];
 
+
   return (
     <View style={styles.containerCardItem}>
-      {/* IMAGE */}
-      <Image source={image} style={imageStyle} />
+      <Image source={{ uri: image }} style={imageStyle} />
 
-      {/* MATCHES */}
-      {matches && (
-        <View style={styles.matchesCardItem}>
-          <Text style={styles.matchesTextCardItem}>
-            <Icon name="heart" /> {matches}% Match!
+      <Text style={styles.descriptionCardItem}>{des}</Text>
+      <Text style={nameStyle}>{inf}</Text>
+
+
+      <View style={styles.actionsCardItem}>
+        <TouchableOpacity style={styles.miniButton}
+          onPress={() => authHandler(0)}
+        >
+          {click === 0 ? (<Fontisto name="person" color='#009387' size={26} />) : (<Fontisto name="person" color='#736F6E' size={26} />)}
+
+          <Text style={styles.star}>
           </Text>
-        </View>
-      )}
+        </TouchableOpacity>
 
-      {/* NAME */}
-      <Text style={nameStyle}>{name}</Text>
+        <TouchableOpacity style={styles.button}
+          onPress={() => authHandler(1)}
+        >
+          {click === 1 ? (<AntDesign name="calendar" color='#009387' size={26} />) : (<AntDesign name="calendar" color='#736F6E' size={26} />)}
+          <Text style={styles.like}>
+          </Text>
+        </TouchableOpacity>
 
-      {/* DESCRIPTION */}
-      {description && (
-        <Text style={styles.descriptionCardItem}>{description}</Text>
-      )}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => authHandler(2)}
+        >
+          {click === 2 ? (<Entypo name="location" color='#009387' size={26} />) : (<Entypo name="location" color='#736F6E' size={26} />)}
+          <Text style={styles.dislike}>
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => authHandler(3)}
+        >
+          {click === 3 ? (<Feather name="phone-call" color='#009387' size={26} />) : (<Feather name="phone-call" color='#736F6E' size={26} />)}
+          <Text style={styles.dislike}>
+          </Text>
+        </TouchableOpacity>
 
-      {/* STATUS */}
-      {status && (
-        <View style={styles.status}>
-          <View style={status === 'Online' ? styles.online : styles.offline} />
-          <Text style={styles.statusText}>{status}</Text>
-        </View>
-      )}
+        <TouchableOpacity style={styles.miniButton}
+          onPress={() => authHandler(4)}
+        >
+          {click === 4 ? (<Entypo name="lock" color='#009387' size={26} />) : (<Entypo name="lock" color='#736F6E' size={26} />)}
+          <Text style={styles.flash}>
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* ACTIONS */}
-      {actions && (
-        <View style={styles.actionsCardItem}>
-          <TouchableOpacity style={styles.miniButton}>
-            <Text style={styles.star}>
-              <Icon name="star" />
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={() => onPressLeft()}>
-            <Text style={styles.like}>
-              <Icon name="like" />
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => onPressRight()}
-          >
-            <Text style={styles.dislike}>
-              <Icon name="dislike" />
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.miniButton}>
-            <Text style={styles.flash}>
-              <Icon name="flash" />
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 };
